@@ -1,29 +1,11 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
-from datetime import date
+from fastapi import FastAPI, HTTPException
+from modelos.clientes import Cliente
 
 app = FastAPI()
 
 lista_clientes = []
 lista_facturas = []
 lista_transacciones = []
-     
-class Cliente(BaseModel):
-    id: int
-    nombre: str
-    descripcion: str | None = None
-
-class Factura(BaseModel):
-    id: int
-    fecha: date
-    valor_total: float
-    cliente_id: int
-
-class Transaccion(BaseModel):
-    id: int
-    vr_unitario: float
-    cantidad: int
-    factura_id: int
 
 @app.get("/clientes")
 def listar_clientes():
@@ -37,10 +19,10 @@ def listar_cliente(id: int):
         
     return {"Mensaje": "Cliente no encontrado"}
 
-@app.post("/clientes")
-def crear_cliente(datos_cliente: Cliente):
+@app.post("/clientes", response_model=Cliente)
+def crear_cliente(datos_cliente: ClienteCrear):
     lista_clientes.append(datos_cliente)
-    return {"Mensaje": "Cliente creado exitosamente", "Cliente": datos_cliente}
+    return datos_cliente
 
 @app.put("/clientes/{id}")
 def editar_cliente(id: int, datos_actualizados: Cliente):
