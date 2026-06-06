@@ -37,8 +37,8 @@ def listar_cliente(id: int):
         
     return {"Mensaje": "Cliente no encontrado"}
 
-@app.post("/clientes", response_model=Cliente)
-def crear_clientes(datos_cliente: Cliente):
+@app.post("/clientes")
+def crear_cliente(datos_cliente: Cliente):
     lista_clientes.append(datos_cliente)
     return {"Mensaje": "Cliente creado exitosamente", "Cliente": datos_cliente}
 
@@ -74,7 +74,7 @@ def listar_factura(id: int):
             return {"Factura": factura}
     return {"Mensaje": "Factura no encontrada"}
  
-@app.post("/facturas", response_model=Factura)
+@app.post("/facturas")
 def crear_factura(datos_factura: Factura):
     cliente_existe = any(c.id == datos_factura.cliente_id for c in lista_clientes)
     if not cliente_existe:
@@ -116,7 +116,7 @@ def listar_transaccion(id: int):
             return {"Transaccion": transaccion}
     return {"Mensaje": "Transacción no encontrada"}
  
-@app.post("/transacciones", response_model=Transaccion)
+@app.post("/transacciones")
 def crear_transaccion(datos_transaccion: Transaccion):
     factura_existe = any(f.id == datos_transaccion.factura_id for f in lista_facturas)
     if not factura_existe:
