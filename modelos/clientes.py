@@ -3,13 +3,15 @@ from pydantic import BaseModel
 
 # modelo de clientes
 class ClienteBase(BaseModel):
-    # validacion con pydantic
     nombre: str
     email: str
-    descripcion: str | None = None
+    descripcion: str
 
 
 class ClienteCrear(ClienteBase):
+    pass
+
+class ClienteEditar(ClienteBase):
     pass
 
 
