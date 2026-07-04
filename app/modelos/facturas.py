@@ -1,13 +1,14 @@
 from pydantic import BaseModel, computed_field
+from sqlmodel import SQLModel, Field, Relashionship
 from .transacciones import Transaccion
 from .clientes import Cliente
 from datetime import datetime
 
 # Modelo de facturas
-class FacturaBase(BaseModel):
-    fecha: str = datetime.now()
-    cliente: Cliente
-    transacciones: list[Transaccion]
+class FacturaBase(SQLModel):
+    fecha: str = Field(default=datetime.now())
+   # cliente: Cliente
+    #transacciones: list[Transaccion]
 
     @computed_field
     @property
@@ -18,12 +19,12 @@ class FacturaBase(BaseModel):
         total_factura = 0.0
         if not factura_id_actual or not self.transacciones:
             return total_factura
-        # recorrer la lista de transacciones, segun el factura_id
+        #  recorrer la lista de transacciones, segun el factura_id
         for transaccion in self.transacciones:
             if transaccion.factura_id == factura_id_actual:
                 total_factura +=transaccion.valor_unitario * transaccion.cantidad
 
-        return 0
+        return 0.0
 
 class FacturaCrear(FacturaBase):
     pass
@@ -31,5 +32,5 @@ class FacturaCrear(FacturaBase):
 class FacturaEditar(FacturaBase):
     pass
 
-class Factura(FacturaBase):
-    id: int | None = None
+class Factura(FacturaBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
