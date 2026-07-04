@@ -1,10 +1,10 @@
 from fastapi import APIRouter, HTTPException, status
-from modelos.transacciones import Transaccion, TransaccionCrear, TransaccionEditar
-from modelos.facturas import Factura, FacturaCrear, FacturaEditar
+from ..modelos.transacciones import Transaccion, TransaccionCrear, TransaccionEditar
+from ..modelos.facturas import Factura
+from ..listas import lista_facturas, lista_transacciones
 
 rutas_transacciones = APIRouter()
-lista_transacciones: list[Transaccion] = []
-lista_facturas: list[Factura] = []
+
 
 
 # ENDPOINTS DE TRANSACCIONES
