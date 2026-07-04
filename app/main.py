@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException, status
-from modelos.clientes import Cliente, ClienteCrear, ClienteEditar
-from modelos.facturas import Factura, FacturaCrear, FacturaEditar
-from modelos.transacciones import Transaccion, TransaccionCrear, TransaccionEditar 
+from app.modelos.clientes import Cliente, ClienteCrear, ClienteEditar
+from app.modelos.facturas import Factura, FacturaCrear, FacturaEditar
+from app.modelos.transacciones import Transaccion, TransaccionCrear, TransaccionEditar 
 
 app = FastAPI()
 
@@ -99,6 +99,7 @@ async def crear_factura(cliente_id: int, datos_factura: FacturaCrear):
     factura_val = Factura.model_validate(datos_factura.model_dump())
     factura_val.cliente = cliente_encontrado
     factura_val.id = len(lista_facturas)+1
+    lista_facturas.append(factura_val)
     return factura_val
 
 # Editar factura
@@ -117,17 +118,37 @@ async def eliminar_factura(factura_id: int):
 # Listar todas las transacciones
 @app.get("/transacciones", response_model=list[Transaccion])
 async def listar_transacciones():
-    pass
+    return lista_transacciones
 
 # Listar una sola transaccion
 @app.get("/transacciones/{transaccion_id}", response_model=Transaccion)
 async def listar_transaccion(transaccion_id: int):
     pass
+    
 
 # Crear transacción
 @app.post("/transacciones/{factura_id}", response_model=Transaccion)
-async def crear_transaccion(transaccion_id: int, datos_transaccion: TransaccionCrear):
-    pass
+async def crear_transaccion(factura_id: int, datos_transaccion: TransaccionCrear):
+    # buscar factura
+    factura_encontrada = None
+    for factura in lista_facturas:
+        if factura.id == factura_id:
+            factura_encontrada = factura
+            #mensaje si no existe la factura
+
+    if not factura_encontrada:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail=f"La factura con id {factura_id}, no existe."
+        )
+    
+    # Validar datos de la transaccion
+    transaccion_val = Transaccion.model_validate(datos_transaccion.model_dump())
+    transaccion_val.factura_id = factura_id
+    factura_encontrada.transacciones.append(transaccion_val)
+
+    transaccion_val.id = len(lista_transacciones)+1
+    return transaccion_val
 
 # Editar transacción
 @app.patch("/transacciones/{transaccion_id}", response_model=Transaccion)
